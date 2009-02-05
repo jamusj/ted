@@ -44,6 +44,7 @@ import time
 import binascii
 import sys
 import struct
+from appscript import *
 
 
 # Special bytes
@@ -153,6 +154,8 @@ class Packet(object):
         (82,       'kw_rate',        "<H",    0.0001),
         (108,      'house_code',     "<B",    1),
         (247,      'kw',             "<H",    0.01),
+        (158,      'kwH_today',       "<I",    0.00001666667),
+        (166,      'kwH_month',       "<I",    0.00001666667),
         (251,      'volts',          "<H",    0.1),
         )
 
@@ -164,6 +167,8 @@ class Packet(object):
 
         for offset, name, fmt, scale in self._protocol_table:
             size = struct.calcsize(fmt)
+            print size
+            print name
             field = data[offset:offset+size]
             value = struct.unpack(fmt, field)[0] * scale
 
@@ -181,8 +186,11 @@ def main():
             print
             for name, value in packet.fields.items():
                 print "%s = %s" % (name, value)
+            app(u'IndigoServer').variables[u'current_kw'].value.set(packet.fields['kw'])
+            app(u'IndigoServer').variables[u'kwH_today'].value.set(packet.fields['kwH_today'])
+            app(u'IndigoServer').variables[u'kwH_month'].value.set(packet.fields['kwH_month'])
 
-        time.sleep(1.0)
+        time.sleep(15.0)
 
 if __name__ == "__main__":
     main()
