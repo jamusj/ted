@@ -44,8 +44,8 @@ import time
 import binascii
 import sys
 import struct
-from appscript import *
-
+import httplib, urllib
+import plistlib
 
 # Special bytes
 
@@ -167,28 +167,52 @@ class Packet(object):
 
         for offset, name, fmt, scale in self._protocol_table:
             size = struct.calcsize(fmt)
-            print size
-            print name
             field = data[offset:offset+size]
             value = struct.unpack(fmt, field)[0] * scale
 
             setattr(self, name, value)
             self.fields[name] = value
 
+def setVariable(host,port,root,variable,value):
+            conn = httplib.HTTPConnection(host,port)
+            params = urllib.urlencode({'value':value})
+            headers = {"Content-type": "application/x-www-form-urlencoded"}
+            url=root+"/variables/"+variable
+            conn.request("PUT",url,params,headers)
+            response = conn.getresponse()
+            if (response.status==303):
+              conn.close
+              return response
+            print "Problem setting "+variable+" to "+str(value)+": "+str(response.status)+" "+response.reason
+            print response.read()
+            conn.close()
+            return response
 
 def main():
-    t = TED(sys.argv[1])
+    plist=plistlib.readPlist("com.jamus.ted.plist")
+    device=plist["device"]
+    host=plist["host"]
+    port=plist["port"]
+    root=plist["serverRoot"]
+    useRestfulApi=plist["useRestfulApi"]
+
+    t = TED(device)
+
     while True:
         for packet in t.poll():
-            print
-            print "%d byte packet: %r" % (
-                len(packet.data), binascii.b2a_hex(packet.data))
-            print
-            for name, value in packet.fields.items():
-                print "%s = %s" % (name, value)
+          if not useRestfulApi:
+            from appscript import app
+
             app(u'IndigoServer').variables[u'current_kw'].value.set(packet.fields['kw'])
             app(u'IndigoServer').variables[u'kwH_today'].value.set(packet.fields['kwH_today'])
             app(u'IndigoServer').variables[u'kwH_month'].value.set(packet.fields['kwH_month'])
+          else:
+            setVariable(host,port,root,'current_kw',packet.fields['kw'])
+            setVariable(host,port,root,'kwH_today',packet.fields['kwH_today']) 
+            setVariable(host,port,root,'kwH_month',packet.fields['kwH_month'])
+
+
+
 
         time.sleep(15.0)
 
