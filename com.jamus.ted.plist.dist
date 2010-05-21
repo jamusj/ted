@@ -2,15 +2,24 @@
 <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>device</key>
-	<string>/dev/tty.usbserial-XXXXXXXX</string>
-	<key>host</key>
-	<string>localhost</string>
-	<key>port</key>
-	<string>8176</string>
-	<key>serverRoot</key>
-	<string>/home/control</string>
-	<key>useRestfulApi</key>
-	<true/>
+    <key>Label</key>
+    <string>com.jamus.ted</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/bin/python</string>
+        <string>/Users/user/Projects/ted/ted.py</string>
+    </array>
+    <key>Disabled</key>
+    <false/>
+    <key>OnDemand</key>
+    <false/>
+    <key>StandardErrorPath</key>
+    <string>/var/log/ted.log</string>
+    <key>StandardOutPath</key>
+    <string>/var/log/ted.log</string>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>UserName</key>
+    <string>nobody</string>
 </dict>
 </plist>

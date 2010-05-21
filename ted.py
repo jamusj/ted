@@ -46,6 +46,7 @@ import sys
 import struct
 import httplib, urllib
 import plistlib
+import sys
 
 # Special bytes
 
@@ -189,7 +190,7 @@ def setVariable(host,port,root,variable,value):
             return response
 
 def main():
-    plist=plistlib.readPlist("com.jamus.ted.plist")
+    plist=plistlib.readPlist(sys.path[0]+"/com.jamus.ted.conf.plist")
     device=plist["device"]
     host=plist["host"]
     port=plist["port"]
