@@ -2,18 +2,3 @@ Reads the current kilowatt usage, kilowatt hour used today and used this month
 from a TED 1001 (http://www.theenergydetective.com/) and stores it in 
 Perceptive Automation's Indigo 4 Home Automation software.
 
-It can use either AppleScript or the RESTful API.
-
-Configuration is now done through preference file instead of the command line.
-
-Copy com.jamus.ted.conf.plist.dist to com.jamus.ted.conf.plist and update 
-device and serverRoot to your configuration.  The serverRoot value should
-match your app_root_path specified in IndigoWebServer.conf in 
-/Library/Application Support/Perceptive Automation/Indigo 4/IndigoWebServer/, 
-or "/" if not specified.
-
-A sample launchd configuration file (com.jamus.ted.plist.dist) is also provided,
-so that the script starts on bootup.  This file should be updated to your 
-configuration, copied to /Library/LaunchDaemons/com.jamus.ted.plist, and loaded 
-via "sudo launchctl com.jamus.ted.plist".  Only the RESTful API has been tested,
-and I don't expect the AppleScript to work, from launchd.
