@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<Devices>
+<Device type="custom" id="ted">
+<Name>TED</Name>
+<ConfigUI>
+<SupportURL>http://slashdot.org</SupportURL>
+<Field id="dev" 
+            type="menu" 
+            readOnly="NO" >
+        <Label>Serial Device</Label>
+        <List class="indigo.serialPorts" filter="indigo.ignoreBluetooth" />
+    </Field>
+<Field id="poll"
+            type="textfield"
+            readOnly="NO" >
+        <Label>Seconds inbetween polls</Label>
+    </Field>
+
+</ConfigUI>
+<States>
+    <State id="current_kw">
+      <ValueType>Float</ValueType>
+      <TriggerLabel>Instantaneous killowatt usage</TriggerLabel>
+      <ControlPageLabel>Instantaneous killwatt usage</ControlPageLabel>
+    </State>
+    <State id="kwH_today">
+      <ValueType>Float</ValueType>
+      <TriggerLabel>Killowatt Hours used today</TriggerLabel>
+      <ControlPageLabel>Killowatt Hours used today</ControlPageLabel>
+    </State>
+    <State id="kwH_month">
+      <ValueType>Float</ValueType>
+      <TriggerLabel>Killwatt Hours used this month</TriggerLabel>
+      <ControlPageLabel>Killowatt Hours used this month</ControlPageLabel>
+    </State>
+    <State id="volts">
+      <ValueType>Float</ValueType>
+      <TriggerLabel>Volts</TriggerLabel>
+      <ControlPageLabel>Volts</ControlPageLabel>
+    </State>
+</States>
+</Device>
+</Devices>

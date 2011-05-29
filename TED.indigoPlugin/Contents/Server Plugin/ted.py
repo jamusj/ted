@@ -1,5 +1,11 @@
 #!/usr/bin/env python
 #
+# This module has been updated, the original copyright and information 
+# is below.  See http://jamus.com/github/jamusj/ted for my updates
+# to this module.  Jamus Jegier
+#
+# --------------------------------------------------------------------
+#
 # This is a Python module for The Energy Detective: A low-cost whole
 # house energy monitoring system. For more information on TED, see
 # http://theenergydetective.com
@@ -44,9 +50,7 @@ import time
 import binascii
 import sys
 import struct
-import httplib, urllib
-import plistlib
-import sys
+
 
 # Special bytes
 
@@ -68,6 +72,11 @@ class TED(object):
         # we are not receiving any valid packet at the moment.
         self.packet_buffer = None
 
+    def close(self):
+      # Ideally this would be done in a destructor, but for some
+      # reason there's a bunch of references to the object I can't find
+      # so just a close for now
+      self.port.close() 
     def poll(self):
         """Request a packet from the RDU, and flush the operating
            system's receive buffer. Any complete packets we've
@@ -174,48 +183,19 @@ class Packet(object):
             setattr(self, name, value)
             self.fields[name] = value
 
-def setVariable(host,port,root,variable,value):
-            conn = httplib.HTTPConnection(host,port)
-            params = urllib.urlencode({'value':value})
-            headers = {"Content-type": "application/x-www-form-urlencoded"}
-            url=root+"/variables/"+variable
-            conn.request("PUT",url,params,headers)
-            response = conn.getresponse()
-            if (response.status==303):
-              conn.close
-              return response
-            print "Problem setting "+variable+" to "+str(value)+": "+str(response.status)+" "+response.reason
-            print response.read()
-            conn.close()
-            return response
 
 def main():
-    plist=plistlib.readPlist(sys.path[0]+"/com.jamus.ted.conf.plist")
-    device=plist["device"]
-    host=plist["host"]
-    port=plist["port"]
-    root=plist["serverRoot"]
-    useRestfulApi=plist["useRestfulApi"]
-
-    t = TED(device)
-
+    t = TED(sys.argv[1])
     while True:
         for packet in t.poll():
-          if not useRestfulApi:
-            from appscript import app
+            print
+            print "%d byte packet: %r" % (
+                len(packet.data), binascii.b2a_hex(packet.data))
+            print
+            for name, value in packet.fields.items():
+                print "%s = %s" % (name, value)
 
-            app(u'IndigoServer').variables[u'current_kw'].value.set(packet.fields['kw'])
-            app(u'IndigoServer').variables[u'kwH_today'].value.set(packet.fields['kwH_today'])
-            app(u'IndigoServer').variables[u'kwH_month'].value.set(packet.fields['kwH_month'])
-          else:
-            setVariable(host,port,root,'current_kw',packet.fields['kw'])
-            setVariable(host,port,root,'kwH_today',packet.fields['kwH_today']) 
-            setVariable(host,port,root,'kwH_month',packet.fields['kwH_month'])
-
-
-
-
-        time.sleep(15.0)
+        time.sleep(1.0)
 
 if __name__ == "__main__":
     main()
