@@ -33,36 +33,20 @@ class Plugin(indigo.PluginBase):
          pluginVersion, 
          pluginPrefs):
      indigo.PluginBase.__init__(self,pluginId,pluginDisplayName,pluginVersion,pluginPrefs)
+     self.tedThreads={}
 
   def __del__(self):
      indigo.PluginBase.__def__(self)
 
-  def deviceStartComm(self,dev):
-     ted.startTedThread(self,dev,indigo)
-
   def deviceStopComm(self,dev):
-     ted.stopTedThread(self,dev,indigo)
-
-  def startTedThread(self,dev,indigo):
-    device=dev.pluginProps.get(u"dev", u"")
-    
-    tedInstance = TED(device,indigo)
-    tedThread = threading.Thread(
-                                 target=functools.partial(_tedThread,tedInstance,dev,indigo)
-                                 )
-    tedThread.start()
-    tedThreads[dev.id]=tedThread
-
-
-  def stopTedThread(self,dev,indigo):
-    if dev.id in tedThreads:
-        tedThread = tedThreads[dev.id]
+    if dev.id in self.tedThreads:
+        tedThread = self.tedThreads[dev.id]
         tedThread.join()
         del tedThread
 
-  def _tedThread(tedInstance,dev,indigo):
-    delay=dev.pluginProps.get(u"poll", u"")
+  def _tedThread(self,tedInstance,dev):
     try:
+      delay=dev.pluginProps.get(u"poll", u"")
       while True:
         for packet in tedInstance.poll():
           dev.updateStateOnServer("current_kw",value=packet.fields['kw'])
@@ -70,9 +54,23 @@ class Plugin(indigo.PluginBase):
           dev.updateStateOnServer("kwH_month",value=packet.fields['kwH_month'])
           dev.updateStateOnServer("volts",value=packet.fields['volts'])
           self.sleep(float(delay))
+    except self.StopThread:
+      indigo.server.log("Stopping thread")
+      pass
     except:
         ## If tedThread throws an exception, it doesn't go to Indigo, so catch
         ## it and report it
       self.exceptionLog() 
     finally:
-      tedInstance.close()
+      tedInstance.close() 
+
+  def deviceStartComm(self,dev):
+    device=dev.pluginProps.get(u"dev", u"")
+   
+    tedInstance = ted.TED(device)
+    tedThread = threading.Thread(
+                                 target=functools.partial(self._tedThread,tedInstance,dev)
+                                 )
+    tedThread.start()
+    self.tedThreads[dev.id]=tedThread
+
