@@ -55,7 +55,6 @@ class Plugin(indigo.PluginBase):
           dev.updateStateOnServer("volts",value=packet.fields['volts'])
           self.sleep(float(delay))
     except self.StopThread:
-      indigo.server.log("Stopping thread")
       pass
     except:
         ## If tedThread throws an exception, it doesn't go to Indigo, so catch
@@ -74,3 +73,6 @@ class Plugin(indigo.PluginBase):
     tedThread.start()
     self.tedThreads[dev.id]=tedThread
 
+  def _preShutdown(self):
+    self.stopThread = True
+    indigo.PluginBase._preShutdown(self)
