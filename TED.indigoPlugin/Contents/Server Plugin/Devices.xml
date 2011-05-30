@@ -16,6 +16,62 @@
         <Label>Seconds inbetween polls</Label>
     </Field>
 
+<Field id="enableCurrentKwVariable"
+   type="checkbox" 
+   devaultValue="no" >
+<Label>Enable storing Instantaneous KW to variable</Label>
+</Field>
+
+<Field id="currentKwVariableName"
+   type="textfield" 
+   enabledBindingId="enableCurrentKwVariable"  
+   defaultValue="instant_kw" >
+<Label>Instantaneous KW variable name</Label>
+</Field>
+
+<Field id="enableDayKwhVariable"
+   type="checkbox" 
+   devaultValue="no" >
+<Label>Enable storing today's KWH to variable</Label>
+</Field>
+
+<Field id="dayKwhVariableName"
+   type="textfield"
+   enabledBindingId="enableDayKwhVariable"  
+   defaultValue="today_kwh" >
+<Label>Today's KWH variable name</Label>
+</Field>
+
+<Field id="enableMonthKwhVariable"
+   type="checkbox" 
+   devaultValue="no" >
+<Label>Enable storing this month's KWH to variable</Label>
+</Field>
+
+<Field id="monthKwhVariableName"
+   type="textfield"
+   enabledBindingId="enableMonthKwhVariable"
+   defaultValue="month_kwh" >
+<Label>This month's KWH variable name</Label>
+</Field>
+
+
+<Field id="enableVoltsVariable"
+   type="checkbox"
+   devaultValue="no" >
+<Label>Enable storing Volts to variable</Label>
+</Field>
+
+<Field id="voltsVariableName"
+   type="textfield"
+   enabledBindingId="enableVoltsVariable"
+   defaultValue="volts" >
+<Label>Volts variable name</Label>
+</Field>
+
+
+
+
 </ConfigUI>
 <States>
     <State id="current_kw">
